@@ -1,0 +1,119 @@
+---
+title: "Tidytuesday: US Tornados"
+format: html
+editor: visual
+---
+
+## Quarto Tidytuesday: US Tornados
+
+The data this week comes from NOAA's National Weather Service Storm Prediction Center Severe Weather Maps, Graphics, and Data Page. Thank you to Evan Gower for the suggestion!
+
+
+```{r}
+library(tidyverse)
+library(quarto)
+library(janitor)
+library(lubridate)
+library(scales)
+library(plotly)
+library(flextable)
+```
+
+## Read Data from Github Repo
+
+```{r}
+data <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-05-16/tornados.csv')
+```
+```{r}
+## Count of Tornado's by Magnitude
+data |> count(mag) |> ggplot(aes(x=mag,y=n)) + geom_col() +
+  labs(title = "Count of Tornados by Magnitude",
+       x="Magnitued",y="Count"        )
+```
+
+## # Plot 1: Scatterplot of Magnitude vs. Property Loss
+
+```{r}
+
+# plot1 <- ggplot(data, aes(x = mag, y = loss)) +
+#   geom_point() +
+#   xlab("Magnitude") +
+#   ylab("Property Loss") +
+#   ggtitle("Magnitude vs. Property Loss")
+
+plot_ly(data, x = ~mag, y = ~loss, type = "scatter", mode = "markers") %>%
+  layout(
+    xaxis = list(title = "Magnitude"),
+    yaxis = list(title = "Property Loss"),
+    title = "Magnitude vs. Property Loss"
+  )
+```
+
+## Plot 2: Bar Plot of Fatalities by Year
+
+```{r}
+# plot2 <- data %>%
+#   group_by(yr) %>%
+#   summarize(total_fatalities = sum(fat)) %>%
+#   ggplot(aes(x = yr, y = total_fatalities)) +
+#   geom_bar(stat = "identity") +
+#   xlab("Year") +
+#   ylab("Total Fatalities") +
+#   ggtitle("Fatalities by Year")
+
+data %>%
+  group_by(yr) %>%
+  summarize(total_fatalities = sum(fat)) %>%
+  plot_ly(x = ~yr, y = ~total_fatalities, type = "bar") %>%
+  layout(
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Total Fatalities"),
+    title = "Fatalities by Year"
+  )
+
+```
+
+## Plot 3: Line Plot of Tornado Length Over Time
+
+```{r}
+# plot3 <- data %>%
+#   mutate(datetime_utc = as.POSIXct(datetime_utc)) %>%
+#   ggplot(aes(x = datetime_utc, y = len)) +
+#   geom_line() +
+#   xlab("Date") +
+#   ylab("Tornado Length (miles)") +
+#   ggtitle("Tornado Length Over Time")
+
+data %>%
+  mutate(datetime_utc = as.POSIXct(datetime_utc)) %>%
+  plot_ly(x = ~datetime_utc, y = ~len, type = "scatter", mode = "lines") %>%
+  layout(
+    xaxis = list(title = "Date"),
+    yaxis = list(title = "Tornado Length (miles)"),
+    title = "Tornado Length Over Time"
+  )
+
+```
+```{r}
+
+```
+
+## Map: Scatterplot of Tornado Locations
+
+```{r}
+# library(leaflet)
+# 
+# # Create a leaflet map object
+# map <- leaflet(data)
+# 
+# # Add markers for tornado locations
+# addMarkers(
+#   map,
+#   lat = ~slat,
+#   lng = ~slon,
+#   popup = ~paste("Latitude: ", slat, "<br>Longitude: ", slon),
+#   label = ~as.character(om)
+# )
+
+```
+
