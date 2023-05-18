@@ -95,7 +95,12 @@ data %>%
 
 ```
 ```{r}
-
+plot_ly(data, x = ~mag, y = ~loss, type = "bar", color = ~loss) %>%
+  layout(
+    xaxis = list(title = "Magnitude"),
+    yaxis = list(title = "Property Loss"),
+    title = "Magnitude vs. Property Loss"
+  )
 ```
 
 ## Map: Scatterplot of Tornado Locations

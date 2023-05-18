@@ -1,0 +1,73 @@
+---
+title: "US Tornados Data"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(scales)
+library(plotly)
+```
+```{r}
+data <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-05-16/tornados.csv')
+```
+
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+
+### Chart A :Count of Tornados by Magnitude
+
+```{r}
+data |> count(mag) |> ggplot(aes(x=mag,y=n)) + geom_col() +
+  labs(title = "Count of Tornados by Magnitude",
+       x="Magnitued",y="Count"        )
+```
+
+### Chart B: Magnitude vs. Property Loss
+
+```{r}
+plot_ly(data, x = ~mag, y = ~loss, type = "scatter", mode = "markers") %>%
+  layout(
+    xaxis = list(title = "Magnitude"),
+    yaxis = list(title = "Property Loss"),
+    title = "Magnitude vs. Property Loss"
+  )
+```
+
+Column {data-width=300}
+-----------------------------------------------------------------------
+
+
+### Chart C: Fatalities by Year
+
+```{r}
+data %>%
+  group_by(yr) %>%
+  summarize(total_fatalities = sum(fat)) %>%
+  plot_ly(x = ~yr, y = ~total_fatalities, type = "bar") %>%
+  layout(
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Total Fatalities"),
+    title = "Fatalities by Year"
+  )
+```
+
+### Chart C: Tornado Length Over Time
+
+```{r}
+data %>%
+  mutate(datetime_utc = as.POSIXct(datetime_utc)) %>%
+  plot_ly(x = ~datetime_utc, y = ~len, type = "scatter", mode = "lines") %>%
+  layout(
+    xaxis = list(title = "Date"),
+    yaxis = list(title = "Tornado Length (miles)"),
+    title = "Tornado Length Over Time"
+  )
+```
